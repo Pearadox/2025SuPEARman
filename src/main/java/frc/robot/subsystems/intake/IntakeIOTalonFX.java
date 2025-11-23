@@ -4,7 +4,7 @@ import com.ctre.phoenix6.controls.MotionMagicVoltage;
 import frc.robot.Constants.IntakeConstants;
 import frc.robot.util.PearadoxTalonFX;
 
-public class IntakeIOTalonFX implements IntakeIO {
+public abstract class IntakeIOTalonFX implements IntakeIO {
     protected final PearadoxTalonFX pivotMotor;
     protected final PearadoxTalonFX rollerMotor;
 

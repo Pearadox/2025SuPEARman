@@ -35,6 +35,10 @@ import frc.robot.subsystems.intake.Intake;
 import frc.robot.subsystems.intake.IntakeIO;
 import frc.robot.subsystems.intake.IntakeIOReal;
 import frc.robot.subsystems.intake.IntakeIOSim;
+import frc.robot.subsystems.spindexer.Spindexer;
+import frc.robot.subsystems.spindexer.SpindexerIO;
+import frc.robot.subsystems.spindexer.SpindexerIOReal;
+import frc.robot.subsystems.spindexer.SpindexerIOSim;
 import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.turret.TurretIO;
 import frc.robot.subsystems.turret.TurretIOReal;
@@ -56,6 +60,7 @@ public class RobotContainer {
     private final Vision vision;
     private final Turret turret;
     private final Intake intake;
+    private final Spindexer spindexer;
 
     public final RobotVisualizer visualizer;
     private final AutoAlign align;
@@ -87,6 +92,7 @@ public class RobotContainer {
                         new VisionIOLimelight(VisionConstants.camera1Name, drive::getRotation));
                 turret = new Turret(new TurretIOReal(), this::getTurretTarget, drive::getChassisSpeeds);
                 intake = new Intake(new IntakeIOReal());
+                spindexer = new Spindexer(new SpindexerIOReal());
                 align = new AutoAlign(drive::getPose);
 
                 break;
@@ -115,6 +121,7 @@ public class RobotContainer {
                         );
                 turret = new Turret(new TurretIOSim(), this::getTurretTarget, drive::getChassisSpeeds);
                 intake = new Intake(new IntakeIOSim());
+                spindexer = new Spindexer(new SpindexerIOSim());
                 align = new AutoAlign(driveSimulation::getSimulatedDriveTrainPose);
 
                 break;
@@ -131,6 +138,7 @@ public class RobotContainer {
                 vision = new Vision(drive, new VisionIO() {}, new VisionIO() {});
                 turret = new Turret(new TurretIO() {}, this::getTurretTarget, drive::getChassisSpeeds);
                 intake = new Intake(new IntakeIO() {});
+                spindexer = new Spindexer(new SpindexerIO() {});
                 align = new AutoAlign(drive::getPose);
 
                 break;
@@ -149,7 +157,8 @@ public class RobotContainer {
         autoChooser.addOption("Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
         autoChooser.addOption("Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-        visualizer = new RobotVisualizer(turret::getTurretAngleRads, intake::getPivotAngleRadsToHorizontal);
+        visualizer = new RobotVisualizer(
+                turret::getTurretAngleRads, spindexer::getAngleRads, intake::getPivotAngleRadsToHorizontal);
 
         // Configure the button bindings
         configureButtonBindings();

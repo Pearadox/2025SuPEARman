@@ -301,4 +301,50 @@ public final class Constants {
         public static final DCMotor PIVOT_MOTOR = DCMotor.getKrakenX60(1);
         public static final DCMotor ROLLER_MOTOR = PhoenixUtil.getKrakenX44(1);
     }
+
+    public static final class SpindexerConstants {
+        public enum SpindexerState {
+            SPAIN_WITHOUT_THE_SA(0), // ref, start the pin count! (off)
+            SPAIN_WITHOUT_THE_IN(2), // enjoy a relaxing retreat... (low speed)
+            ESPANA_SIN_EL_PAN(4), // ts (this spindexer) tiene mucha hambre (medium speed)
+            SPAIN_WITHOUT_THE_A(12); // spin! (high speed)
+
+            public final double volts;
+
+            private SpindexerState(double volts) {
+                this.volts = volts;
+            }
+        }
+
+        public static final TalonFXConfiguration getSpindexerConfig() {
+            TalonFXConfiguration config = new TalonFXConfiguration();
+
+            config.CurrentLimits.SupplyCurrentLimitEnable = true;
+            config.CurrentLimits.SupplyCurrentLimit = 20;
+            config.CurrentLimits.StatorCurrentLimitEnable = true;
+            config.CurrentLimits.StatorCurrentLimit = 20;
+
+            config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+            config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+            return config;
+        }
+
+        public static final int SPINDEXER_ID = 40;
+        public static final double SPINDEXER_GEAR_RATIO = (84. / 12.) * (40. / 32.) * (36. / 14.); // 22.5
+        public static final double SPINDEXER_P_COEFFICIENT = 2 * Math.PI / SPINDEXER_GEAR_RATIO;
+
+        // 1 bubble weighs 1.5lbs
+        public static final double SPINDEXER_MASS = Units.lbsToKilograms(10);
+        // each bubble "orbits" ~6.4 in from the center
+        public static final double BUBBLE_TO_SPINDEXER = Units.inchesToMeters(6.379881);
+        public static final double SPINDEXER_MOI =
+                1.0 / 2.0 * SPINDEXER_MASS * BUBBLE_TO_SPINDEXER * BUBBLE_TO_SPINDEXER;
+
+        public static final DCMotor SPINDEXER_MOTOR = DCMotor.getKrakenX60(1);
+
+        // 5 speech bubbles in spindexer + 1 between transfer & turret
+        public static final double SPINDEXER_CAPACITY = 5;
+        public static final double SPINDEXER_ANGLE_INCREMENT = 2 * Math.PI / SPINDEXER_CAPACITY;
+    }
 }
