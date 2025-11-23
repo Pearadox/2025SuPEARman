@@ -26,6 +26,7 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.subsystems.vision.VisionConstants;
+import frc.robot.util.PhoenixUtil;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -222,5 +223,82 @@ public final class Constants {
         public static final double FF_ERROR_THRESHOLD = Units.degreesToRadians(45);
         // only apply feedforward if the drivetrain is rotating at a reasonable speed
         public static final double FF_CHASSIS_ROT_VELOCITY_LIMIT = 1.5 * Math.PI; // rad/s
+    }
+
+    public static final class IntakeConstants {
+        public enum IntakeState {
+            STOWED(80, 0),
+            DEPLOYED(45, 6),
+            EJECTING(55, -6);
+
+            public final double pivotRads;
+            public final double rollerVolts;
+
+            private IntakeState(double pivotDegrees, double rollerVolts) {
+                this.pivotRads = Units.degreesToRadians(pivotDegrees);
+                this.rollerVolts = rollerVolts;
+            }
+        }
+
+        public static final TalonFXConfiguration getPivotConfig() {
+            TalonFXConfiguration config = new TalonFXConfiguration();
+
+            config.CurrentLimits.SupplyCurrentLimitEnable = true;
+            config.CurrentLimits.SupplyCurrentLimit = 20;
+            config.CurrentLimits.StatorCurrentLimitEnable = true;
+            config.CurrentLimits.StatorCurrentLimit = 20;
+
+            config.MotionMagic.MotionMagicCruiseVelocity = 20;
+            config.MotionMagic.MotionMagicAcceleration = 75;
+
+            config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+            config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+            config.Slot0.kG = 0.0;
+            config.Slot0.kS = 0.0;
+            config.Slot0.kV = 0.0;
+            config.Slot0.kA = 0.0;
+            config.Slot0.kP = 0.67;
+            config.Slot0.kI = 0.0;
+            config.Slot0.kD = 0.0;
+
+            return config;
+        }
+
+        public static final TalonFXConfiguration getRollerConfig() {
+            TalonFXConfiguration config = new TalonFXConfiguration();
+
+            config.CurrentLimits.SupplyCurrentLimitEnable = true;
+            config.CurrentLimits.SupplyCurrentLimit = 20;
+            config.CurrentLimits.StatorCurrentLimitEnable = true;
+            config.CurrentLimits.StatorCurrentLimit = 20;
+
+            config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+            config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+            return config;
+        }
+
+        public static final int PIVOT_ID = 50;
+        public static final double PIVOT_GEAR_RATIO = (42. / 14.) * (66. / 20.) * (50. / 14.); // ~35.36
+        public static final double PIVOT_P_COEFFICIENT = 2 * Math.PI / PIVOT_GEAR_RATIO;
+
+        public static final int ROLLER_ID = 51;
+        public static final double ROLLER_GEAR_RATIO = (35. / 14.); // 2.5
+        public static final double ROLLER_P_COEFFICIENT = 2 * Math.PI / ROLLER_GEAR_RATIO;
+
+        public static final double PIVOT_STARTING_ANGLE = Units.degreesToRadians(80);
+        public static final double PIVOT_MIN_ANGLE = Units.degreesToRadians(45);
+        public static final double PIVOT_MAX_ANGLE = Units.degreesToRadians(80);
+
+        public static final double PIVOT_MASS = Units.lbsToKilograms(7);
+        public static final double PIVOT_LENGTH = Units.inchesToMeters(18);
+
+        public static final double ROLLER_MASS = Units.lbsToKilograms(2);
+        public static final double ROLLER_RADIUS = Units.inchesToMeters(1);
+        public static final double ROLLER_MOI = 1.0 / 2.0 * ROLLER_MASS * ROLLER_RADIUS * ROLLER_RADIUS;
+
+        public static final DCMotor PIVOT_MOTOR = DCMotor.getKrakenX60(1);
+        public static final DCMotor ROLLER_MOTOR = PhoenixUtil.getKrakenX44(1);
     }
 }

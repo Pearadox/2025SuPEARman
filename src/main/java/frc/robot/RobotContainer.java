@@ -22,13 +22,19 @@ import edu.wpi.first.wpilibj.GenericHID;
 import edu.wpi.first.wpilibj.XboxController;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
+import edu.wpi.first.wpilibj2.command.InstantCommand;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.FieldConstants;
+import frc.robot.Constants.IntakeConstants.IntakeState;
 import frc.robot.commands.AutoAlign;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.*;
+import frc.robot.subsystems.intake.Intake;
+import frc.robot.subsystems.intake.IntakeIO;
+import frc.robot.subsystems.intake.IntakeIOReal;
+import frc.robot.subsystems.intake.IntakeIOSim;
 import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.turret.TurretIO;
 import frc.robot.subsystems.turret.TurretIOReal;
@@ -49,6 +55,7 @@ public class RobotContainer {
     private final Drive drive;
     private final Vision vision;
     private final Turret turret;
+    private final Intake intake;
 
     public final RobotVisualizer visualizer;
     private final AutoAlign align;
@@ -79,6 +86,7 @@ public class RobotContainer {
                         new VisionIOLimelight(VisionConstants.camera0Name, drive::getRotation),
                         new VisionIOLimelight(VisionConstants.camera1Name, drive::getRotation));
                 turret = new Turret(new TurretIOReal(), this::getTurretTarget, drive::getChassisSpeeds);
+                intake = new Intake(new IntakeIOReal());
                 align = new AutoAlign(drive::getPose);
 
                 break;
@@ -106,6 +114,7 @@ public class RobotContainer {
                         //         camera1Name, robotToCamera1, driveSimulation::getSimulatedDriveTrainPose)
                         );
                 turret = new Turret(new TurretIOSim(), this::getTurretTarget, drive::getChassisSpeeds);
+                intake = new Intake(new IntakeIOSim());
                 align = new AutoAlign(driveSimulation::getSimulatedDriveTrainPose);
 
                 break;
@@ -121,6 +130,7 @@ public class RobotContainer {
                         (pose) -> {});
                 vision = new Vision(drive, new VisionIO() {}, new VisionIO() {});
                 turret = new Turret(new TurretIO() {}, this::getTurretTarget, drive::getChassisSpeeds);
+                intake = new Intake(new IntakeIO() {});
                 align = new AutoAlign(drive::getPose);
 
                 break;
@@ -139,7 +149,7 @@ public class RobotContainer {
         autoChooser.addOption("Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
         autoChooser.addOption("Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-        visualizer = new RobotVisualizer(turret::getTurretAngleRads);
+        visualizer = new RobotVisualizer(turret::getTurretAngleRads, intake::getPivotAngleRadsToHorizontal);
 
         // Configure the button bindings
         configureButtonBindings();
@@ -168,6 +178,10 @@ public class RobotContainer {
         controller.povLeft().whileTrue(align.reefAlignLeft(drive));
         controller.povDown().whileTrue(align.reefAlignMid(drive));
         controller.povRight().whileTrue(align.reefAlignRight(drive));
+
+        opController.a().onTrue(new InstantCommand(() -> intake.setState(IntakeState.STOWED)));
+        opController.b().onTrue(new InstantCommand(() -> intake.setState(IntakeState.DEPLOYED)));
+        opController.y().onTrue(new InstantCommand(() -> intake.setState(IntakeState.EJECTING)));
 
         // Reset gyro / odometry
         final Runnable resetGyro = Constants.currentMode == Constants.Mode.SIM
