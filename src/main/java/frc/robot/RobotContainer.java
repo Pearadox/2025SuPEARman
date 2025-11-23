@@ -24,10 +24,15 @@ import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.Commands;
 import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
+import frc.robot.Constants.FieldConstants;
 import frc.robot.commands.AutoAlign;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
 import frc.robot.subsystems.drive.*;
+import frc.robot.subsystems.turret.Turret;
+import frc.robot.subsystems.turret.TurretIO;
+import frc.robot.subsystems.turret.TurretIOReal;
+import frc.robot.subsystems.turret.TurretIOSim;
 import frc.robot.subsystems.vision.*;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
@@ -43,8 +48,7 @@ public class RobotContainer {
     // Subsystems
     private final Drive drive;
     private final Vision vision;
-    //     private final Arm arm;
-    //     private final EndEffector endEffector;
+    private final Turret turret;
 
     public final RobotVisualizer visualizer;
     private final AutoAlign align;
@@ -74,6 +78,7 @@ public class RobotContainer {
                         drive,
                         new VisionIOLimelight(VisionConstants.camera0Name, drive::getRotation),
                         new VisionIOLimelight(VisionConstants.camera1Name, drive::getRotation));
+                turret = new Turret(new TurretIOReal(), this::getTurretTarget, drive::getChassisSpeeds);
                 align = new AutoAlign(drive::getPose);
 
                 break;
@@ -100,6 +105,7 @@ public class RobotContainer {
                         // new VisionIOPhotonVisionSim(
                         //         camera1Name, robotToCamera1, driveSimulation::getSimulatedDriveTrainPose)
                         );
+                turret = new Turret(new TurretIOSim(), this::getTurretTarget, drive::getChassisSpeeds);
                 align = new AutoAlign(driveSimulation::getSimulatedDriveTrainPose);
 
                 break;
@@ -114,6 +120,7 @@ public class RobotContainer {
                         new ModuleIO() {},
                         (pose) -> {});
                 vision = new Vision(drive, new VisionIO() {}, new VisionIO() {});
+                turret = new Turret(new TurretIO() {}, this::getTurretTarget, drive::getChassisSpeeds);
                 align = new AutoAlign(drive::getPose);
 
                 break;
@@ -132,7 +139,7 @@ public class RobotContainer {
         autoChooser.addOption("Drive SysId (Dynamic Forward)", drive.sysIdDynamic(SysIdRoutine.Direction.kForward));
         autoChooser.addOption("Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
-        visualizer = new RobotVisualizer();
+        visualizer = new RobotVisualizer(turret::getTurretAngleRads);
 
         // Configure the button bindings
         configureButtonBindings();
@@ -207,5 +214,15 @@ public class RobotContainer {
             return alliance.get() == DriverStation.Alliance.Red;
         }
         return false;
+    }
+
+    public Rotation2d getTurretTarget() {
+        Pose2d target =
+                new Pose2d(FieldConstants.FIELD_LENGTH / 2.0, FieldConstants.FIELD_WIDTH / 2.0, Rotation2d.kZero);
+
+        return drive.getPose()
+                .getRotation()
+                .plus(Rotation2d.kCW_90deg)
+                .minus(drive.getPose().minus(target).getTranslation().getAngle());
     }
 }

@@ -13,12 +13,16 @@
 
 package frc.robot;
 
+import com.ctre.phoenix6.configs.TalonFXConfiguration;
+import com.ctre.phoenix6.signals.InvertedValue;
+import com.ctre.phoenix6.signals.NeutralModeValue;
 import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Pose3d;
 import edu.wpi.first.math.geometry.Rotation3d;
 import edu.wpi.first.math.geometry.Transform3d;
 import edu.wpi.first.math.geometry.Translation2d;
 import edu.wpi.first.math.geometry.Translation3d;
+import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.subsystems.vision.VisionConstants;
@@ -154,24 +158,6 @@ public final class Constants {
     }
 
     public static final class VisualizerConstants {
-        public static final Translation3d STAGE0_ZERO = new Translation3d(-0.26035, 0, 0.32385);
-        public static final Translation3d WRIST_ZERO = new Translation3d(0.368313, 0, 0.196875);
-        public static final Translation3d WRIST_OFFSET = WRIST_ZERO.minus(STAGE0_ZERO);
-
-        public static final Transform3d CORAL_TRANSFORM = new Transform3d(
-                new Translation3d(Units.inchesToMeters(5.25), 0, 0)
-                        .rotateBy(new Rotation3d(0, -Units.degreesToRadians(45), 0)),
-                new Rotation3d(0, -Units.degreesToRadians(125), 0));
-
-        public static final Transform3d HORIZONTAL_CORAL_TRANSFORM = new Transform3d(
-                new Translation3d(Units.inchesToMeters(10.5), 0, 0)
-                        .rotateBy(new Rotation3d(0, -Units.degreesToRadians(96), 0)),
-                new Rotation3d(0, 0, Units.degreesToRadians(90)));
-
-        public static final Transform3d ALGAE_TRANSFORM = new Transform3d(
-                new Translation3d(Units.inchesToMeters(16), 0, 0).rotateBy(CORAL_TRANSFORM.getRotation()),
-                Rotation3d.kZero);
-
         public static final Translation3d M0_ZERO = new Translation3d(0.0, -0.174625, 0.0);
         public static final Translation3d M1_ZERO = new Translation3d(0.0, -0.071544, 0.368300);
         public static final Translation3d M2_ZERO = new Translation3d(0.0, -0.009525, 0.0);
@@ -179,5 +165,62 @@ public final class Constants {
         public static final Translation3d M4_ZERO = new Translation3d(0.0, 0.215676, 0.118053);
         public static final Translation3d M5_ZERO = new Translation3d(0.0, 0.382877, 0.324873);
         public static final Translation3d M5_OFFSET = M5_ZERO.minus(M3_ZERO);
+    }
+
+    public static final class TurretConstants {
+        public static final TalonFXConfiguration getTurretConfig() {
+            TalonFXConfiguration config = new TalonFXConfiguration();
+
+            config.CurrentLimits.SupplyCurrentLimitEnable = true;
+            config.CurrentLimits.SupplyCurrentLimit = 50;
+            config.CurrentLimits.StatorCurrentLimitEnable = true;
+            config.CurrentLimits.StatorCurrentLimit = 50;
+
+            config.MotionMagic.MotionMagicCruiseVelocity = 20;
+            config.MotionMagic.MotionMagicAcceleration = 75;
+
+            config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+            config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+            config.Slot0.kG = 0.0;
+            config.Slot0.kS = 0.0;
+            config.Slot0.kV = 0.0;
+            config.Slot0.kA = 0.0;
+            config.Slot0.kP = 0.67;
+            config.Slot0.kI = 0.0;
+            config.Slot0.kD = 0.05;
+
+            return config;
+        }
+
+        public static final int TURRET_ID = 20;
+        public static final double TURRET_GEAR_RATIO = 95. / 10.;
+        public static final double TURRET_P_COEFFICIENT = 2 * Math.PI / TURRET_GEAR_RATIO;
+
+        public static final double TURRET_STARTING_ANGLE = Units.degreesToRadians(0);
+        public static final double TURRET_MIN_ANGLE = Units.degreesToRadians(-270);
+        public static final double TURRET_MAX_ANGLE = Units.degreesToRadians(270);
+
+        public static final double TURRET_MASS = Units.lbsToKilograms(16);
+        public static final double TURRET_CG_RADIUS = Units.inchesToMeters(3.75);
+
+        // mass ≈ 16 lb, Lzz ≈ 494 in^2 lb
+        // center of mass of turret ≈ 3.75 in from its axis of rotation
+        // I = I_cm + md^2 = 494 + 16(3.75)^2 = 719 in^2 lb ≈ 0.21 kg m^2
+        public static final double TURRET_MOI = 0.21;
+
+        public static final DCMotor TURRET_MOTOR = DCMotor.getKrakenX60(1);
+
+        // feedforward term: adds a voltage to the turret as the chassis rotates
+        public static final double K_OMEGA = 0.1; // volts per radian per second
+
+        public static final double SAFETY_LIMIT = Units.degreesToRadians(5);
+        public static final double TURRET_SAFE_MIN = TURRET_MIN_ANGLE + SAFETY_LIMIT;
+        public static final double TURRET_SAFE_MAX = TURRET_MAX_ANGLE - SAFETY_LIMIT;
+
+        // only apply feedforward if the turret is within 45 degrees of its setpoint
+        public static final double FF_ERROR_THRESHOLD = Units.degreesToRadians(45);
+        // only apply feedforward if the drivetrain is rotating at a reasonable speed
+        public static final double FF_CHASSIS_ROT_VELOCITY_LIMIT = 1.5 * Math.PI; // rad/s
     }
 }
