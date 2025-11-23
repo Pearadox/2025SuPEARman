@@ -1,6 +1,8 @@
 package frc.robot.subsystems.intake;
 
 import com.ctre.phoenix6.sim.TalonFXSimState;
+import edu.wpi.first.math.system.plant.LinearSystemId;
+import edu.wpi.first.wpilibj.simulation.DCMotorSim;
 import edu.wpi.first.wpilibj.simulation.SingleJointedArmSim;
 import frc.robot.Constants;
 import frc.robot.Constants.IntakeConstants;
@@ -16,15 +18,10 @@ public class IntakeIOSim extends IntakeIOTalonFX {
             true,
             IntakeConstants.PIVOT_STARTING_ANGLE);
 
-    private final SingleJointedArmSim rollerPhysicsSim = new SingleJointedArmSim(
-            IntakeConstants.ROLLER_MOTOR,
-            IntakeConstants.ROLLER_GEAR_RATIO,
-            IntakeConstants.ROLLER_MOI,
-            IntakeConstants.ROLLER_RADIUS,
-            Double.NEGATIVE_INFINITY,
-            Double.POSITIVE_INFINITY,
-            false,
-            0);
+    private final DCMotorSim rollerPhysicsSim = new DCMotorSim(
+            LinearSystemId.createDCMotorSystem(
+                    IntakeConstants.ROLLER_MOTOR, IntakeConstants.ROLLER_SHAFT_MOI, IntakeConstants.ROLLER_GEAR_RATIO),
+            IntakeConstants.ROLLER_MOTOR);
 
     private final TalonFXSimState pivotSimState;
     private final TalonFXSimState rollerSimState;
@@ -49,9 +46,11 @@ public class IntakeIOSim extends IntakeIOTalonFX {
 
         pivotSimState.setRawRotorPosition((pivotPhysicsSim.getAngleRads() - IntakeConstants.PIVOT_STARTING_ANGLE)
                 / IntakeConstants.PIVOT_P_COEFFICIENT);
-        rollerSimState.setRawRotorPosition(rollerPhysicsSim.getAngleRads() / IntakeConstants.ROLLER_P_COEFFICIENT);
+        rollerSimState.setRawRotorPosition(
+                rollerPhysicsSim.getAngularPositionRad() / IntakeConstants.ROLLER_P_COEFFICIENT);
 
         pivotSimState.setRotorVelocity(pivotPhysicsSim.getVelocityRadPerSec() / IntakeConstants.PIVOT_P_COEFFICIENT);
-        rollerSimState.setRotorVelocity(rollerPhysicsSim.getVelocityRadPerSec() / IntakeConstants.ROLLER_P_COEFFICIENT);
+        rollerSimState.setRotorVelocity(
+                rollerPhysicsSim.getAngularVelocityRadPerSec() / IntakeConstants.ROLLER_P_COEFFICIENT);
     }
 }

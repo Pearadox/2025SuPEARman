@@ -26,7 +26,6 @@ import edu.wpi.first.math.system.plant.DCMotor;
 import edu.wpi.first.math.util.Units;
 import edu.wpi.first.wpilibj.RobotBase;
 import frc.robot.subsystems.vision.VisionConstants;
-import frc.robot.util.PhoenixUtil;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -297,9 +296,10 @@ public final class Constants {
         public static final double ROLLER_MASS = Units.lbsToKilograms(2);
         public static final double ROLLER_RADIUS = Units.inchesToMeters(1);
         public static final double ROLLER_MOI = 1.0 / 2.0 * ROLLER_MASS * ROLLER_RADIUS * ROLLER_RADIUS;
+        public static final double ROLLER_SHAFT_MOI = ROLLER_MOI * ROLLER_GEAR_RATIO * ROLLER_GEAR_RATIO;
 
         public static final DCMotor PIVOT_MOTOR = DCMotor.getKrakenX60(1);
-        public static final DCMotor ROLLER_MOTOR = PhoenixUtil.getKrakenX44(1);
+        public static final DCMotor ROLLER_MOTOR = DCMotor.getKrakenX60(1); // x44
     }
 
     public static final class SpindexerConstants {
@@ -340,11 +340,52 @@ public final class Constants {
         public static final double BUBBLE_TO_SPINDEXER = Units.inchesToMeters(6.379881);
         public static final double SPINDEXER_MOI =
                 1.0 / 2.0 * SPINDEXER_MASS * BUBBLE_TO_SPINDEXER * BUBBLE_TO_SPINDEXER;
+        public static final double SPINDEXER_SHAFT_MOI = SPINDEXER_MOI * SPINDEXER_GEAR_RATIO * SPINDEXER_GEAR_RATIO;
 
         public static final DCMotor SPINDEXER_MOTOR = DCMotor.getKrakenX60(1);
 
         // 5 speech bubbles in spindexer + 1 between transfer & turret
         public static final double SPINDEXER_CAPACITY = 5;
         public static final double SPINDEXER_ANGLE_INCREMENT = 2 * Math.PI / SPINDEXER_CAPACITY;
+    }
+
+    public static final class TransferConstants {
+        public enum TransferState {
+            OFF(0),
+            TRANSFERRING(6),
+            REVERSE(-3);
+
+            public final double volts;
+
+            private TransferState(double volts) {
+                this.volts = volts;
+            }
+        }
+
+        public static final TalonFXConfiguration getLRConfig() {
+            TalonFXConfiguration config = new TalonFXConfiguration();
+
+            config.CurrentLimits.SupplyCurrentLimitEnable = true;
+            config.CurrentLimits.SupplyCurrentLimit = 20;
+            config.CurrentLimits.StatorCurrentLimitEnable = true;
+            config.CurrentLimits.StatorCurrentLimit = 20;
+
+            config.MotorOutput.Inverted = InvertedValue.CounterClockwise_Positive;
+            config.MotorOutput.NeutralMode = NeutralModeValue.Brake;
+
+            return config;
+        }
+
+        public static final int LEFT_ID = 23;
+        public static final int RIGHT_ID = 24;
+
+        public static final double TRANSFER_GEAR_RATIO = 24. / 18.; // 1.33
+        public static final double TRANSFER_P_COEFFICIENT = 2 * Math.PI / TRANSFER_GEAR_RATIO;
+
+        public static final double TRANSFER_MASS = Units.lbsToKilograms(4);
+        public static final double TRANSFER_RADIUS = Units.inchesToMeters(3);
+        public static final double TRANSFER_MOI = 0.002;
+
+        public static final DCMotor TRANSFER_MOTORS = DCMotor.getKrakenX60(2);
     }
 }

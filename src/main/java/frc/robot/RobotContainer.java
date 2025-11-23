@@ -27,6 +27,7 @@ import edu.wpi.first.wpilibj2.command.button.CommandXboxController;
 import edu.wpi.first.wpilibj2.command.sysid.SysIdRoutine;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.IntakeConstants.IntakeState;
+import frc.robot.Constants.TransferConstants.TransferState;
 import frc.robot.commands.AutoAlign;
 import frc.robot.commands.DriveCommands;
 import frc.robot.generated.TunerConstants;
@@ -39,6 +40,10 @@ import frc.robot.subsystems.spindexer.Spindexer;
 import frc.robot.subsystems.spindexer.SpindexerIO;
 import frc.robot.subsystems.spindexer.SpindexerIOReal;
 import frc.robot.subsystems.spindexer.SpindexerIOSim;
+import frc.robot.subsystems.transfer.Transfer;
+import frc.robot.subsystems.transfer.TransferIO;
+import frc.robot.subsystems.transfer.TransferIOReal;
+import frc.robot.subsystems.transfer.TransferIOSim;
 import frc.robot.subsystems.turret.Turret;
 import frc.robot.subsystems.turret.TurretIO;
 import frc.robot.subsystems.turret.TurretIOReal;
@@ -61,6 +66,7 @@ public class RobotContainer {
     private final Turret turret;
     private final Intake intake;
     private final Spindexer spindexer;
+    private final Transfer transfer;
 
     public final RobotVisualizer visualizer;
     private final AutoAlign align;
@@ -93,6 +99,7 @@ public class RobotContainer {
                 turret = new Turret(new TurretIOReal(), this::getTurretTarget, drive::getChassisSpeeds);
                 intake = new Intake(new IntakeIOReal());
                 spindexer = new Spindexer(new SpindexerIOReal());
+                transfer = new Transfer(new TransferIOReal());
                 align = new AutoAlign(drive::getPose);
 
                 break;
@@ -122,6 +129,7 @@ public class RobotContainer {
                 turret = new Turret(new TurretIOSim(), this::getTurretTarget, drive::getChassisSpeeds);
                 intake = new Intake(new IntakeIOSim());
                 spindexer = new Spindexer(new SpindexerIOSim());
+                transfer = new Transfer(new TransferIOSim());
                 align = new AutoAlign(driveSimulation::getSimulatedDriveTrainPose);
 
                 break;
@@ -139,6 +147,7 @@ public class RobotContainer {
                 turret = new Turret(new TurretIO() {}, this::getTurretTarget, drive::getChassisSpeeds);
                 intake = new Intake(new IntakeIO() {});
                 spindexer = new Spindexer(new SpindexerIO() {});
+                transfer = new Transfer(new TransferIO() {});
                 align = new AutoAlign(drive::getPose);
 
                 break;
@@ -158,7 +167,10 @@ public class RobotContainer {
         autoChooser.addOption("Drive SysId (Dynamic Reverse)", drive.sysIdDynamic(SysIdRoutine.Direction.kReverse));
 
         visualizer = new RobotVisualizer(
-                turret::getTurretAngleRads, spindexer::getAngleRads, intake::getPivotAngleRadsToHorizontal);
+                turret::getTurretAngleRads,
+                transfer::getRoll,
+                spindexer::getAngleRads,
+                intake::getPivotAngleRadsToHorizontal);
 
         // Configure the button bindings
         configureButtonBindings();
@@ -188,9 +200,27 @@ public class RobotContainer {
         controller.povDown().whileTrue(align.reefAlignMid(drive));
         controller.povRight().whileTrue(align.reefAlignRight(drive));
 
-        opController.a().onTrue(new InstantCommand(() -> intake.setState(IntakeState.STOWED)));
-        opController.b().onTrue(new InstantCommand(() -> intake.setState(IntakeState.DEPLOYED)));
-        opController.y().onTrue(new InstantCommand(() -> intake.setState(IntakeState.EJECTING)));
+        controller
+                .leftBumper()
+                .onTrue(new InstantCommand(() -> intake.setState(IntakeState.DEPLOYED)))
+                .onFalse(new InstantCommand(() -> intake.setState(IntakeState.STOWED)));
+
+        controller
+                .rightBumper()
+                .onTrue(new InstantCommand(() -> transfer.setState(TransferState.TRANSFERRING)))
+                .onFalse(new InstantCommand(() -> transfer.setState(TransferState.OFF)));
+
+        // --- Operator Controls ---
+        opController
+                .y()
+                .onTrue(new InstantCommand(() -> {
+                    intake.setState(IntakeState.EJECTING);
+                    transfer.setState(TransferState.REVERSE);
+                }))
+                .onFalse(new InstantCommand(() -> {
+                    intake.setState(IntakeState.STOWED);
+                    transfer.setState(TransferState.OFF);
+                }));
 
         // Reset gyro / odometry
         final Runnable resetGyro = Constants.currentMode == Constants.Mode.SIM
