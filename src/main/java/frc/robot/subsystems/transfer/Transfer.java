@@ -35,4 +35,9 @@ public class Transfer extends SubsystemBase {
     public double getRoll() {
         return inputs.leftData.position() * TransferConstants.TRANSFER_P_COEFFICIENT;
     }
+
+    @AutoLogOutput
+    public double getAngularVelocityRadPerSec() {
+        return inputs.leftData.velocity() * TransferConstants.TRANSFER_P_COEFFICIENT;
+    }
 }

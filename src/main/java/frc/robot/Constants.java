@@ -86,8 +86,8 @@ public final class Constants {
     }
 
     public static final class FieldConstants {
-        public static final double FIELD_LENGTH = Units.inchesToMeters(690.876);
-        public static final double FIELD_WIDTH = Units.inchesToMeters(317);
+        public static final double FIELD_LENGTH = Units.inchesToMeters(648);
+        public static final double FIELD_WIDTH = Units.inchesToMeters(324);
 
         public static final int[] BLUE_REEF_TAG_IDS = {18, 19, 20, 21, 22, 17};
         public static final int[] BLUE_CORAL_STATION_TAG_IDS = {12, 13};
@@ -345,7 +345,7 @@ public final class Constants {
         public static final DCMotor SPINDEXER_MOTOR = DCMotor.getKrakenX60(1);
 
         // 5 speech bubbles in spindexer + 1 between transfer & turret
-        public static final double SPINDEXER_CAPACITY = 5;
+        public static final int SPINDEXER_CAPACITY = 5;
         public static final double SPINDEXER_ANGLE_INCREMENT = 2 * Math.PI / SPINDEXER_CAPACITY;
     }
 

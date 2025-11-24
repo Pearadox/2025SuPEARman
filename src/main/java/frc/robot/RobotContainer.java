@@ -53,6 +53,8 @@ import frc.robot.subsystems.turret.TurretIO;
 import frc.robot.subsystems.turret.TurretIOReal;
 import frc.robot.subsystems.turret.TurretIOSim;
 import frc.robot.subsystems.vision.*;
+import frc.robot.util.heroheist.HeldGamePieceManager;
+import frc.robot.util.heroheist.HeroHeistArena;
 import org.ironmaple.simulation.SimulatedArena;
 import org.ironmaple.simulation.drivesims.SwerveDriveSimulation;
 import org.littletonrobotics.junction.Logger;
@@ -75,6 +77,7 @@ public class RobotContainer {
 
     public final RobotVisualizer visualizer;
     private final AutoAlign align;
+    private final HeldGamePieceManager manager;
 
     private SwerveDriveSimulation driveSimulation = null;
 
@@ -111,6 +114,7 @@ public class RobotContainer {
                 break;
             case SIM:
                 // Sim robot, instantiate physics sim IO implementations
+                SimulatedArena.overrideInstance(new HeroHeistArena());
 
                 driveSimulation = new SwerveDriveSimulation(Drive.mapleSimConfig, new Pose2d(3, 3, new Rotation2d()));
                 SimulatedArena.getInstance().addDriveTrainSimulation(driveSimulation);
@@ -179,6 +183,13 @@ public class RobotContainer {
                 transfer::getRoll,
                 spindexer::getAngleRads,
                 intake::getPivotAngleRadsToHorizontal);
+
+        manager = new HeldGamePieceManager(
+                intake::getRollerVelocity,
+                spindexer::getAngleRads,
+                transfer::getAngularVelocityRadPerSec,
+                shooter::getAngularVelocityRadPerSec,
+                driveSimulation);
 
         // Configure the button bindings
         configureButtonBindings();
@@ -260,13 +271,11 @@ public class RobotContainer {
         if (Constants.currentMode != Constants.Mode.SIM) return;
 
         SimulatedArena.getInstance().simulationPeriodic();
+        manager.periodic();
         Logger.recordOutput("FieldSimulation/Pose", new Pose3d(driveSimulation.getSimulatedDriveTrainPose()));
         Logger.recordOutput(
-                "FieldSimulation/Coral", SimulatedArena.getInstance().getGamePiecesArrayByType("Coral"));
-        Logger.recordOutput(
-                "FieldSimulation/Algae", SimulatedArena.getInstance().getGamePiecesArrayByType("Algae"));
-        // Logger.recordOutput(
-        //         "FieldSimulation/Staged Algae", AlgaeHandler.getInstance().periodic());
+                "FieldSimulation/Speech Bubble",
+                SimulatedArena.getInstance().getGamePiecesArrayByType("Speech Bubble"));
     }
 
     public static boolean isRedAlliance() {

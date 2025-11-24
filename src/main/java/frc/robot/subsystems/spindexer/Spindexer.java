@@ -41,7 +41,7 @@ public class Spindexer extends SubsystemBase {
     }
 
     @AutoLogOutput
-    public double getAngularVelocityRps() {
+    public double getAngularVelocityRadsPerSec() {
         return inputs.spindexerData.velocity() * SpindexerConstants.SPINDEXER_P_COEFFICIENT;
     }
 }

@@ -33,4 +33,9 @@ public class Shooter extends SubsystemBase {
     public double getAngularPositionRads() {
         return inputs.shooterOneData.position() * ShooterConstants.SHOOTER_P_COEFFICIENT;
     }
+
+    @AutoLogOutput
+    public double getAngularVelocityRadPerSec() {
+        return inputs.shooterOneData.velocity() * ShooterConstants.SHOOTER_P_COEFFICIENT;
+    }
 }

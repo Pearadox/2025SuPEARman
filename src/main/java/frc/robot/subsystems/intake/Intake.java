@@ -43,6 +43,6 @@ public class Intake extends SubsystemBase {
     }
 
     public double getRollerVelocity() {
-        return inputs.rollerData.velocity();
+        return inputs.rollerData.velocity() * IntakeConstants.ROLLER_P_COEFFICIENT;
     }
 }
