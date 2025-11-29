@@ -11,7 +11,11 @@
       "degrees": 90
     }
   ],
-  "position": [0, 0, 0],
+  "position": [
+    0,
+    0,
+    0
+  ],
   "cameras": [],
   "components": [
     {
@@ -25,7 +29,11 @@
           "degrees": 90
         }
       ],
-      "zeroedPosition": [0.0, 0.174625, 0.0]
+      "zeroedPosition": [
+        0.0,
+        0.174625,
+        0.0
+      ]
     },
     {
       "zeroedRotations": [
@@ -38,7 +46,11 @@
           "degrees": 90
         }
       ],
-      "zeroedPosition": [0.0, 0.071544, -0.368300]
+      "zeroedPosition": [
+        0.0,
+        0.071544,
+        -0.368300
+      ]
     },
     {
       "zeroedRotations": [
@@ -51,7 +63,11 @@
           "degrees": 90
         }
       ],
-      "zeroedPosition": [0.0, 0.009525, 0.0]
+      "zeroedPosition": [
+        0.0,
+        0.009525,
+        0.0
+      ]
     },
     {
       "zeroedRotations": [
@@ -64,7 +80,11 @@
           "degrees": 90
         }
       ],
-      "zeroedPosition": [0.0, -0.136351, -0.193383]
+      "zeroedPosition": [
+        0.0,
+        -0.136351,
+        -0.193383
+      ]
     },
     {
       "zeroedRotations": [
@@ -77,7 +97,11 @@
           "degrees": 90
         }
       ],
-      "zeroedPosition": [0.0, -0.215676, -0.118053]
+      "zeroedPosition": [
+        0.0,
+        -0.215676,
+        -0.118053
+      ]
     },
     {
       "zeroedRotations": [
@@ -90,7 +114,11 @@
           "degrees": 90
         }
       ],
-      "zeroedPosition": [0.0, -0.246637, -0.450096]
+      "zeroedPosition": [
+        0.0,
+        -0.246637,
+        -0.450096
+      ]
     },
     {
       "zeroedRotations": [
@@ -103,7 +131,11 @@
           "degrees": 90
         }
       ],
-      "zeroedPosition": [0.095038, -0.160961, -0.560462]
+      "zeroedPosition": [
+        0.095038,
+        -0.160961,
+        -0.560462
+      ]
     }
   ]
 }

@@ -79,7 +79,8 @@ public class HeldGamePieceManager {
         double intakeVel = intakeVelocitySupplier.getAsDouble() * IntakeConstants.ROLLER_RADIUS;
         double spindexerPos = spindexerPositionSupplier.getAsDouble();
         double transferVel = transferVelocitySupplier.getAsDouble() * TransferConstants.TRANSFER_RADIUS;
-        double shooterVel = shooterVelocitySupplier.getAsDouble() * ShooterConstants.SHOOTER_RADIUS;
+        double shooterVel =
+                shooterVelocitySupplier.getAsDouble() * ShooterConstants.SHOOTER_RADIUS * ShooterConstants.EFFICIENCY;
         Pose2d robotPose = poseSupplier.get();
 
         var iterator = bubbles.iterator();
@@ -100,7 +101,7 @@ public class HeldGamePieceManager {
 
     private void launch(double shooterVel) {
         Transform3d shooterTransform = new Transform3d(
-                VisualizerConstants.M6_ZERO, new Rotation3d(0, Math.PI / 2 - hoodAngleSupplier.getAsDouble(), 0));
+                ShooterConstants.EJECT_POSITION, new Rotation3d(0, Math.PI / 2 - hoodAngleSupplier.getAsDouble(), 0));
 
         SimulatedArena.getInstance()
                 .addGamePieceProjectile(new SpeechBubbleOnFly(
@@ -137,10 +138,11 @@ public class HeldGamePieceManager {
     private boolean isSpindexSlotNearTransfer(int slot, double spindexerPos) {
         if (slot < 0 || slot >= spindexerSlots.length) return false;
 
-        double angle = MathUtil.inputModulus(spindexerPos, 0, 2 * Math.PI);
-        double slotAngle = Units.degreesToRadians(slot * 72);
+        double angle = MathUtil.angleModulus(spindexerPos);
+        double slotAngle = MathUtil.angleModulus(Math.PI / 2.0 + Units.degreesToRadians(slot * 72));
 
-        return Math.abs(angle - slotAngle) < Units.degreesToRadians(15);
+        double error = MathUtil.angleModulus(angle - slotAngle);
+        return Math.abs(error) < Units.degreesToRadians(30);
     }
 
     private Transform3d getSpindexerTransform(double spindexerYaw) {
@@ -148,11 +150,12 @@ public class HeldGamePieceManager {
     }
 
     private Transform3d getBubbleInSpindexerTransform(double spindexerYaw, int slot) {
+        double slotAngle = Math.PI / 2.0 + Units.degreesToRadians(slot * 72);
         return getSpindexerTransform(spindexerYaw)
                 .plus(new Transform3d(
                         new Translation3d(SpindexerConstants.BUBBLE_TO_SPINDEXER, 0, 0.2)
-                                .rotateBy(new Rotation3d(0, 0, -spindexerYaw)),
-                        Rotation3d.kZero));
+                                .rotateBy(new Rotation3d(0, 0, -spindexerYaw + slotAngle)),
+                        new Rotation3d(0, 0, -spindexerYaw + slotAngle)));
     }
 
     class HeldSpeechBubble {
@@ -177,13 +180,14 @@ public class HeldGamePieceManager {
                         location = Location.SPINDEXER;
                         break;
                     }
-                    transform = new Transform3d(0.5 - x * 0.5, 0, 0.2 * x, Rotation3d.kZero);
+                    transform = new Transform3d(0, 0.5 - x * 0.5, 0.2 * x, Rotation3d.kZero);
                     break;
                 }
                 case SPINDEXER -> {
                     int index = getSpindex(this);
                     if (index < 0) {
                         location = Location.INTAKE;
+                        x = 0.5;
                         break;
                     }
                     if (isSpindexSlotNearTransfer(index, spindexerPos) && transferVel > 1) {
@@ -201,7 +205,7 @@ public class HeldGamePieceManager {
                         location = Location.SHOOTER;
                         break;
                     }
-                    transform = new Transform3d(-0.2, 0, 0.2 + (x - 2) * 0.2, Rotation3d.kZero);
+                    transform = new Transform3d(0, -0.2, 0.2 + (x - 2) * 0.4, Rotation3d.kZero);
                     break;
                 }
                 case SHOOTER -> {
@@ -209,7 +213,7 @@ public class HeldGamePieceManager {
                     if (x > 4) {
                         return true;
                     }
-                    transform = new Transform3d(-0.2, (x - 3) * 0.2, 0.4, Rotation3d.kZero);
+                    transform = new Transform3d((x - 3) * 0.4, -0.2, ShooterConstants.EJECT_HEIGHT, Rotation3d.kZero);
                 }
             }
             return false;

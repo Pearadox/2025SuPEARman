@@ -5,6 +5,7 @@ import edu.wpi.first.math.geometry.Pose2d;
 import edu.wpi.first.math.geometry.Rotation2d;
 import edu.wpi.first.wpilibj2.command.Command;
 import edu.wpi.first.wpilibj2.command.RunCommand;
+import frc.robot.Constants;
 import frc.robot.Constants.FieldConstants;
 import frc.robot.Constants.HoodConstants;
 import frc.robot.Constants.ShooterConstants;
@@ -41,7 +42,12 @@ public class AutoAim {
 
     private static double getHoodTargetAngle(Pose2d robotPose, Pose2d targetPose, double h) {
         double x = robotPose.minus(targetPose).getTranslation().getNorm();
-        double launchAngle = Math.atan(Math.abs(h / x));
+        // double launchAngle = Math.atan(Math.abs(h / x));
+
+        double v = ShooterConstants.TANGENTIAL_VELOCITY_AT_12V;
+        double discriminant = Math.pow(v, 4) - Constants.g * (Constants.g * Math.pow(x, 2) + 2 * h * Math.pow(v, 2));
+        double tanTheta = (Math.pow(v, 2) - Math.sqrt(discriminant)) / (Constants.g * x);
+        double launchAngle = Math.atan(tanTheta);
 
         return MathUtil.clamp(Math.PI / 2 - launchAngle, HoodConstants.HOOD_MIN_ANGLE, HoodConstants.HOOD_MAX_ANGLE);
     }

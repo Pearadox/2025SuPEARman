@@ -52,7 +52,7 @@ public final class Constants {
     public static final double LOOP_PERIOD = 0.02; // 20ms
     public static final double LOOP_FREQUENCY = 1.0 / LOOP_PERIOD; // 50Hz
     public static final double NOMINAL_VOLTAGE = 12;
-    public static final double g = 9.79285; // in Houston
+    public static final double g = 11; // Maple Sim uses g=11, it's actually 9.79285 m/s^2 in Houston
 
     public static final class AlignConstants {
         public static final double BRANCH_SPACING = Units.inchesToMeters(12.97 / 2.0);
@@ -316,7 +316,7 @@ public final class Constants {
     public static final class SpindexerConstants {
         public enum SpindexerState {
             SPAIN_WITHOUT_THE_SA(0), // ref, start the pin count! (off)
-            SPAIN_WITHOUT_THE_IN(2), // enjoy a relaxing retreat... (low speed)
+            SPAIN_WITHOUT_THE_IN(1.5), // enjoy a relaxing retreat... (low speed)
             ESPANA_SIN_EL_PAN(4), // ts (this spindexer) tiene mucha hambre (medium speed)
             SPAIN_WITHOUT_THE_A(12); // spin! (high speed)
 
@@ -403,7 +403,7 @@ public final class Constants {
     public static final class ShooterConstants {
         public enum ShooterState {
             OFF(0),
-            FULL(6);
+            FULL(12);
 
             public final double volts;
 
@@ -433,13 +433,18 @@ public final class Constants {
         public static final double SHOOTER_P_COEFFICIENT = 2 * Math.PI / SHOOTER_GEAR_RATIO;
 
         public static final double SHOOTER_MASS = Units.lbsToKilograms(6);
-        public static final double SHOOTER_RADIUS = Units.inchesToMeters(4);
+        public static final double SHOOTER_RADIUS = Units.inchesToMeters(2);
         public static final double SHOOTER_MOI = 0.004;
 
         public static final DCMotor SHOOTER_MOTORS = DCMotor.getKrakenX60(2);
 
-        public static final double TANGENTIAL_VELOCITY_AT_12V = 100 * SHOOTER_P_COEFFICIENT * SHOOTER_RADIUS;
+        // 50% of tangential velocity is transferred to game piece
+        public static final double EFFICIENCY = 0.5;
+        public static final double TANGENTIAL_VELOCITY_AT_12V =
+                100 * SHOOTER_P_COEFFICIENT * SHOOTER_RADIUS * EFFICIENCY; // ~32 m/s
         public static final double EJECT_HEIGHT = 0.635;
+
+        public static final Translation3d EJECT_POSITION = new Translation3d(-0.16, 0, 0.635);
     }
 
     public static final class HoodConstants {

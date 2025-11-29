@@ -182,7 +182,7 @@ public final class PhoenixUtil {
     }
 
     // this will be in wpilib 2026, see https://github.com/wpilibsuite/allwpilib/pull/8319/files
-    
+
     /**
      * Return a gearbox of Kraken X44 brushless motors.
      *
