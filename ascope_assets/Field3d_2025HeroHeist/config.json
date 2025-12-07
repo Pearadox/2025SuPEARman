@@ -57,7 +57,52 @@
       "stagedObjects": []
     },
     {
-      "name": "Speech Bubble",
+      "name": "Red Speech Bubble",
+      "rotations": [
+        {
+          "axis": "x",
+          "degrees": 90
+        }
+      ],
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "stagedObjects": []
+    },
+    {
+      "name": "Blue Speech Bubble",
+      "rotations": [
+        {
+          "axis": "x",
+          "degrees": 90
+        }
+      ],
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "stagedObjects": []
+    },
+    {
+      "name": "Green Speech Bubble",
+      "rotations": [
+        {
+          "axis": "x",
+          "degrees": 90
+        }
+      ],
+      "position": [
+        0,
+        0,
+        0
+      ],
+      "stagedObjects": []
+    },
+    {
+      "name": "Gold Speech Bubble",
       "rotations": [
         {
           "axis": "x",
