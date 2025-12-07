@@ -7,29 +7,20 @@
       "height": 736,
       "state": {
         "sidebar": {
-          "width": 250,
+          "width": 274,
           "expanded": [
             "/AdvantageKit/RealOutputs",
             "/AdvantageKit/RealOutputs/FieldSimulation",
-            "/AdvantageKit/RealOutputs/Vision",
-            "/AdvantageKit/RealOutputs/Vision/Camera0",
-            "/AdvantageKit/RealOutputs/AutoAlign/TranslationOutput",
-            "/AdvantageKit/EE",
-            "/AdvantageKit",
-            "/AdvantageKit/EndEffector",
             "/AdvantageKit/Turret/TurretData",
-            "/AdvantageKit/RealOutputs/SwerveChassisSpeeds/Measured",
-            "/AdvantageKit/RealOutputs/Spindexer/RelativeYaw",
-            "/AdvantageKit/Transfer",
-            "/AdvantageKit/Shooter",
             "/RealOutputs",
             "/RealOutputs/LoggedRobot",
             "/DriverStation",
-            "/RealOutputs/AutoAlign",
-            "/RealOutputs/DriveToPose",
-            "/AdvantageKit/Hood",
             "/AdvantageKit/Hood/HoodData",
-            "/AdvantageKit/RealOutputs/Hood"
+            "/AdvantageKit/Shooter/ShooterOneData",
+            "/AdvantageKit/RealOutputs/HeldGamePieceManager",
+            "/AdvantageKit",
+            "/AdvantageKit/RealOutputs/RobotVisualizer",
+            "/AdvantageKit/RealOutputs/GamePieceManager"
           ]
         },
         "tabs": {
@@ -59,29 +50,45 @@
                   },
                   {
                     "type": "component",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/FieldSimulation/Components2",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/RobotVisualizer/Components",
                     "logType": "Transform3d[]",
                     "visible": true,
                     "options": {}
                   },
                   {
-                    "type": "cone",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/FieldSimulation/Speech Bubble",
+                    "type": "gamePiece",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/FieldSimulation/Red Speech Bubbles",
                     "logType": "Pose3d[]",
                     "visible": true,
                     "options": {
-                      "color": "#ff0000",
-                      "position": "center"
+                      "variant": "Red Speech Bubble"
                     }
                   },
                   {
-                    "type": "cone",
-                    "logKey": "NT:/AdvantageKit/RealOutputs/FieldSimulation/Held Bubbles",
+                    "type": "gamePiece",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/FieldSimulation/Blue Speech Bubbles",
                     "logType": "Pose3d[]",
                     "visible": true,
                     "options": {
-                      "color": "#00ffff",
-                      "position": "center"
+                      "variant": "Blue Speech Bubble"
+                    }
+                  },
+                  {
+                    "type": "gamePiece",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/GamePieceManager/Held Red Bubbles",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {
+                      "variant": "Red Speech Bubble"
+                    }
+                  },
+                  {
+                    "type": "gamePiece",
+                    "logKey": "NT:/AdvantageKit/RealOutputs/GamePieceManager/Held Blue Bubbles",
+                    "logType": "Pose3d[]",
+                    "visible": true,
+                    "options": {
+                      "variant": "Blue Speech Bubble"
                     }
                   }
                 ],
@@ -93,17 +100,17 @@
                 "cameraIndex": -1,
                 "orbitFov": 50,
                 "cameraPosition": [
-                  -1.7704082645201478,
-                  0.46909613974098546,
-                  0.22311665652974907
+                  7.263043971532015,
+                  1.3894374550876858,
+                  -0.1465559841539812
                 ],
                 "cameraTarget": [
-                  -4.269227570599946,
-                  0.8921938133838528,
-                  -0.22890915118603225
+                  -0.7636215410345382,
+                  0.8908669402380505,
+                  -0.2142621453253827
                 ]
               },
-              "controlsHeight": 135
+              "controlsHeight": 211
             },
             {
               "type": 8,
