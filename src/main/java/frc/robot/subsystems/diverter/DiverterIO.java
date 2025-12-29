@@ -1,15 +1,16 @@
-package frc.robot.subsystems.intake;
+package frc.robot.subsystems.diverter;
 
 import frc.robot.util.PearadoxTalonFX.MotorData;
 import org.littletonrobotics.junction.AutoLog;
 
-public interface IntakeIO {
+public interface DiverterIO {
     @AutoLog
-    static class IntakeIOInputs {
+    static class DiverterIOInputs {
+        public MotorData pivotData = new MotorData();
         public MotorData rollerData = new MotorData();
     }
 
-    default void updateInputs(IntakeIOInputs inputs) {}
+    default void updateInputs(DiverterIOInputs inputs) {}
 
     default void runPivotPosition(double setpointRots) {}
 
