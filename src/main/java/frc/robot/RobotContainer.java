@@ -91,7 +91,6 @@ public class RobotContainer {
 
     // Controller
     private static final CommandXboxController controller = new CommandXboxController(0);
-    private static final CommandXboxController opController = new CommandXboxController(1);
 
     // Dashboard inputs
     private final LoggedDashboardChooser<Command> autoChooser;
@@ -246,7 +245,7 @@ public class RobotContainer {
                 .onFalse(new InstantCommand(() -> transfer.setState(TransferState.OFF)));
 
         controller
-                .b()
+                .back()
                 .onTrue(new InstantCommand(() -> {
                     intake.setState(IntakeState.EJECTING);
                     transfer.setState(TransferState.REVERSE);
@@ -265,10 +264,10 @@ public class RobotContainer {
         controller.start().onTrue(Commands.runOnce(resetGyro, drive).ignoringDisable(true));
 
         // --- Operator Controls ---
-        opController.a().onTrue(new InstantCommand(() -> aimAssist.setCurrentGoal(Goal.UPTOWN)));
-        opController.x().onTrue(new InstantCommand(() -> aimAssist.setCurrentGoal(Goal.DOWNTOWN)));
-        opController.b().onTrue(new InstantCommand(() -> aimAssist.setCurrentGoal(Goal.LOW_FOOTHILL)));
-        opController.y().onTrue(new InstantCommand(() -> aimAssist.setCurrentGoal(Goal.HIGH_FOOTHILL)));
+        controller.a().onTrue(new InstantCommand(() -> aimAssist.setCurrentGoal(Goal.UPTOWN)));
+        controller.x().onTrue(new InstantCommand(() -> aimAssist.setCurrentGoal(Goal.DOWNTOWN)));
+        controller.b().onTrue(new InstantCommand(() -> aimAssist.setCurrentGoal(Goal.LOW_FOOTHILL)));
+        controller.y().onTrue(new InstantCommand(() -> aimAssist.setCurrentGoal(Goal.HIGH_FOOTHILL)));
     }
 
     /**
