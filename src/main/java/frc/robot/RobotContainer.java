@@ -264,7 +264,7 @@ public class RobotContainer {
         controller.start().onTrue(Commands.runOnce(resetGyro, drive).ignoringDisable(true));
 
         // --- Operator Controls ---
-        controller.a().onTrue(new InstantCommand(() -> aimAssist.setCurrentGoal(Goal.UPTOWN)));
+        controller.a().onTrue(new InstantCommand(() -> aimAssist.setCurrentGoal(Goal.HUB)));
         controller.x().onTrue(new InstantCommand(() -> aimAssist.setCurrentGoal(Goal.DOWNTOWN)));
         controller.b().onTrue(new InstantCommand(() -> aimAssist.setCurrentGoal(Goal.LOW_FOOTHILL)));
         controller.y().onTrue(new InstantCommand(() -> aimAssist.setCurrentGoal(Goal.HIGH_FOOTHILL)));

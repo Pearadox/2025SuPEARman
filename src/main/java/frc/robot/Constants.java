@@ -89,11 +89,16 @@ public final class Constants {
     }
 
     public static final class FieldConstants {
-        public static final double FIELD_LENGTH = Units.inchesToMeters(648);
-        public static final double FIELD_WIDTH = Units.inchesToMeters(324);
+        public static final double FIELD_LENGTH = Units.inchesToMeters(651.2);
+        public static final double FIELD_WIDTH = Units.inchesToMeters(317.7);
 
         public static final Pose2d CENTER =
                 new Pose2d(FIELD_LENGTH / 2.0, FieldConstants.FIELD_WIDTH / 2.0, Rotation2d.kZero);
+
+        public static final Pose2d RED_HUB = new Pose2d(4.5974, 4.034536, Rotation2d.kZero);
+        public static final Pose2d BLUE_HUB = new Pose2d(11.938, 4.034536, Rotation2d.kZero);
+
+        public static final double HUB_HEIGHT = Units.inchesToMeters(72);
 
         public static final double LOW_FOOTHILL_HEIGHT = Units.inchesToMeters(46.5);
         public static final double HIGH_FOOTHILL_HEIGHT = Units.inchesToMeters(103.5);
@@ -110,6 +115,7 @@ public final class Constants {
         public static final List<Pose2d> FOOTHILL_DISTRICTS = new ArrayList<>();
         public static final List<Pose2d> UPTOWN_DISTRICTS = new ArrayList<>();
         public static final List<Pose2d> DOWNTOWN_DISTRICTS = new ArrayList<>();
+        public static final List<Pose2d> HUBS = new ArrayList<>();
 
         static {
             // east foothills, red protected zone
@@ -127,6 +133,9 @@ public final class Constants {
                 DOWNTOWN_DISTRICTS.add(
                         LEFT_DOWNTOWN_DISTRICT.plus(new Transform2d(i * DISTRICT_SEPARATION, 0, Rotation2d.kZero)));
             }
+
+            HUBS.add(BLUE_HUB);
+            HUBS.add(RED_HUB);
         }
 
         public static final int BLUE_BUBBLE_ROWS = 5;
@@ -463,7 +472,7 @@ public final class Constants {
     public static final class ShooterConstants {
         public enum ShooterState {
             OFF(0),
-            FULL(6);
+            ON(2.67); // 2.67
 
             public final double volts;
 
@@ -500,8 +509,10 @@ public final class Constants {
 
         // 50% of tangential velocity is transferred to game piece
         public static final double EFFICIENCY = 0.5;
+        public static final double DUTY_OUT = (ShooterState.ON.volts / 12.);
+
         public static final double TANGENTIAL_VELOCITY_AT_12V =
-                50 * SHOOTER_P_COEFFICIENT * SHOOTER_RADIUS * EFFICIENCY; // ~32/2 m/s
+                100 * SHOOTER_P_COEFFICIENT * SHOOTER_RADIUS * EFFICIENCY * DUTY_OUT; // ~32/2 m/s
         public static final double EJECT_HEIGHT = 0.67; // 0.635
     }
 
@@ -536,8 +547,8 @@ public final class Constants {
         public static final double HOOD_P_COEFFICIENT = 2 * Math.PI / HOOD_GEAR_RATIO;
 
         public static final double HOOD_STARTING_ANGLE = Units.degreesToRadians(30);
-        public static final double HOOD_MIN_ANGLE = Units.degreesToRadians(30);
-        public static final double HOOD_MAX_ANGLE = Units.degreesToRadians(75); // 64
+        public static final double HOOD_MIN_ANGLE = Units.degreesToRadians(0); // 30
+        public static final double HOOD_MAX_ANGLE = Units.degreesToRadians(90); // 75
 
         public static final double HOOD_MASS = Units.lbsToKilograms(4);
         public static final double HOOD_LENGTH = Units.inchesToMeters(8);
