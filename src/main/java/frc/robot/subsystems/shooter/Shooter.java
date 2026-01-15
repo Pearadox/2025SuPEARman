@@ -3,6 +3,7 @@ package frc.robot.subsystems.shooter;
 import edu.wpi.first.wpilibj2.command.SubsystemBase;
 import frc.robot.Constants.ShooterConstants;
 import frc.robot.Constants.ShooterConstants.ShooterState;
+import frc.robot.util.LoggedTunableNumber;
 import lombok.Getter;
 import lombok.Setter;
 import org.littletonrobotics.junction.AutoLogOutput;
@@ -12,7 +13,9 @@ public class Shooter extends SubsystemBase {
     @AutoLogOutput
     @Getter
     @Setter
-    private ShooterState state = ShooterState.FULL;
+    private ShooterState state = ShooterState.ON;
+
+    private final LoggedTunableNumber shooterVolts = new LoggedTunableNumber("Shooter/Volts", 2.67);
 
     private ShooterIO io;
     private final ShooterIOInputsAutoLogged inputs = new ShooterIOInputsAutoLogged();
@@ -26,7 +29,11 @@ public class Shooter extends SubsystemBase {
         io.updateInputs(inputs);
         Logger.processInputs("Shooter", inputs);
 
-        io.runVolts(state.volts);
+        double setpointVolts = state == ShooterState.ON ? shooterVolts.get() : state.volts;
+
+        io.runVolts(setpointVolts);
+
+        Logger.recordOutput("Shooter/Setpoint Volts", setpointVolts);
     }
 
     @AutoLogOutput
